@@ -9,18 +9,18 @@ namespace {
 	AutoRegisterService<UpdateService> _autoRegister;
 }
 
-void GTASA::SDK::UpdateService::onInit()
+void UpdateService::onInit()
 {
-	LOG_INFO("[UpdateService] Initialized\n");
+	LOG_INFO("[UpdateService] Initialized");
 }
 
-void GTASA::SDK::UpdateService::onUpdate()
+void UpdateService::onUpdate()
 {
-	// service loop
+	LOG_INFO("[UpdateService] tick()");
 }
 
 void UpdateService::onShutdown()
 {
-	OutputDebugStringA("[UpdateService] Shutdown\n");
+	LOG_INFO("[UpdateService] Shutdown");
 }
 
