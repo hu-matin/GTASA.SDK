@@ -4,6 +4,8 @@
 #include <vector>
 #include <algorithm>
 #include "service_registry.h"
+#include "hook/hook_manager.h"
+#include "hook/hook_registry.h"
 
 namespace GTASA {
 	namespace SDK {
@@ -16,8 +18,8 @@ namespace GTASA {
 			void init();
 			void shutdown();
 
-			void DispatchUpdate();
-			void DispatchRender();
+			void dispatchUpdate();
+			void dispatchRender();
 
 			SDKRuntime(const SDKRuntime&) = delete;
 			SDKRuntime& operator=(const SDKRuntime&) = delete;
