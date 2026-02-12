@@ -1,8 +1,4 @@
 #include "game_loop_hook.h"
-#include "core/hook/auto_hook.h"
-#include "core/hook/hook_manager.h"
-#include "core/sdk_runtime.h"
-#include "core/logging/logger.hpp"
 
 using namespace GTASA::SDK;
 using namespace Logging;
@@ -17,9 +13,9 @@ namespace {
 
     int __cdecl hk_ProcessFrame(int command, int param)
     {
-        // command == 0x1a -> Frame processing
+        // command == 0x1a -> Game processing
         if (command == 0x1a) {
-            SDKRuntime::instance().dispatchRender();
+            EventBus::instance().dispatch(EventType::GameProcess);
         }
 
         return oProcessFrame(command, param);
@@ -49,18 +45,7 @@ void GameLoopHook::install()
         reinterpret_cast<void*>(hk_ProcessFrame)
     );
 
-    LOG_INFO("[GameLoopHook] Frame processor hooked!");
-
-	// offset: 0x747660 - 0x400000 = 0x347660
-    oScreenLoad = reinterpret_cast<tScreenLoad>(
-        GameBase::address(0x00347660)
-        );
-    //HookManager::instance().addHook(
-    //    reinterpret_cast<void**>(&oScreenLoad),
-    //    reinterpret_cast<void*>(hk_ScreenLoad)
-    //);
-
-    LOG_INFO("");
+    LOG_INFO("[GameLoopHook] Game processor hooked!");
 }
 
 void GameLoopHook::uninstall()
