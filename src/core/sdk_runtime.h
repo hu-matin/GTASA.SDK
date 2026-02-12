@@ -1,11 +1,12 @@
 #pragma once
-#include "i_service.h"
 #include "memory"
 #include <vector>
 #include <algorithm>
-#include "service_registry.h"
 #include "hook/hook_manager.h"
 #include "hook/hook_registry.h"
+#include "script/script.h"
+#include "events/event_bus.h"
+
 
 namespace GTASA {
 	namespace SDK {
@@ -17,9 +18,6 @@ namespace GTASA {
 
 			void init();
 			void shutdown();
-
-			void dispatchUpdate();
-			void dispatchRender();
 
 			SDKRuntime(const SDKRuntime&) = delete;
 			SDKRuntime& operator=(const SDKRuntime&) = delete;

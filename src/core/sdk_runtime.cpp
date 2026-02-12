@@ -37,13 +37,9 @@ void SDKRuntime::init()
 	GameBase::initialize();
 
 
-	LOG_INFO("[SDKRuntime] Initializing services...");
-	ServiceRegistry::instance().sort();
-
-	for (auto& service : ServiceRegistry::instance().getAll())
-		service->onInit();
-	LOG_INFO("[SDKRuntime] Services initialized successfully.");
-
+	LOG_INFO("[SDKRuntime] Initializing scripts...");
+	EventBus::instance().dispatch(EventType::Initialize);
+	LOG_INFO("[SDKRuntime] Scripts initialized successfully.");
 
 	LOG_INFO("[SDKRuntime] Installing hooks...");
 	HookRegistry::instance().sort();
@@ -64,19 +60,8 @@ void SDKRuntime::shutdown()
 {
 	if (m_initialized)
 	{
-		for (auto& service : ServiceRegistry::instance().getAll())
-			service->onShutdown();
-
+		EventBus::instance().dispatch(EventType::Shutdown);
 		m_initialized = false;
 	}
 }
 
-void SDKRuntime::dispatchUpdate() {
-	for (auto& service : ServiceRegistry::instance().getAll())
-		service->onUpdate();
-}
-
-void SDKRuntime::dispatchRender() {
-	for (auto& service : ServiceRegistry::instance().getAll())
-		service->onRender();
-}
