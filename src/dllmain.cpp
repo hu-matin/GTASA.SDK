@@ -1,5 +1,5 @@
 #include "Windows.h"
-#include "sdk_thread.h"
+#include "core/sdk_thread.h"
 
 BOOL APIENTRY DllMain(HMODULE hModule,
 	DWORD reason,
