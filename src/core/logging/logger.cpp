@@ -19,7 +19,8 @@ void Logger::Start() {
     errno_t err1 = freopen_s(&fp, "CONOUT$", "w", stdout);
     errno_t err2 = freopen_s(&fp, "CONOUT$", "w", stderr);
     if (err1 != 0 || err2 != 0) {
-        // Handle error - logging failed to redirect
+        // Console redirection failed, but continue with console allocated
+        // Logging will still work but output may not be visible
     }
 
     // Stop existing thread if running

@@ -15,7 +15,8 @@ namespace GTASA {
             // base address of gta_sa.exe
             HMODULE hModule = GetModuleHandleA(nullptr);
             if (hModule == nullptr) {
-                // Handle error - could throw or log
+                // Critical initialization error: failed to get module handle
+                // Set error state and return - address() will return 0 for safety
                 s_base = 0;
                 s_initialized = false;
                 return;
@@ -32,7 +33,8 @@ namespace GTASA {
         uintptr_t GameBase::address(uintptr_t offset)
         {
             if (!s_initialized || s_base == 0) {
-                // Return 0 or throw exception
+                // Base not initialized - return 0 to prevent invalid memory access
+                // Callers should check for 0 return value
                 return 0;
             }
             return s_base + offset;
