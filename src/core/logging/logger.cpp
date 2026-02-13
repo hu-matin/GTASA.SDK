@@ -13,17 +13,24 @@ namespace Logging
 
 void Logger::Start() {
     #ifndef NDEBUG
-    this->running = true;
-
     AllocConsole();
 
-    FILE* fp;
-    freopen_s(&fp, "CONOUT$", "w", stdout);
-    freopen_s(&fp, "CONOUT$", "w", stderr);
+    FILE* fp = nullptr;
+    errno_t err1 = freopen_s(&fp, "CONOUT$", "w", stdout);
+    errno_t err2 = freopen_s(&fp, "CONOUT$", "w", stderr);
+    if (err1 != 0 || err2 != 0) {
+        // Console redirection failed, but continue with console allocated
+        // Logging will still work but output may not be visible
+    }
 
-    if(this->thread.joinable())
+    // Stop existing thread if running
+    if (this->running && this->thread.joinable()) {
+        this->running = false;
+        this->cv.notify_all();
         this->thread.join();
+    }
 
+    this->running = true;
     this->thread = std::thread(&Logger::loggerThread, this);
     
     #else 

@@ -8,9 +8,9 @@ HookRegistry& HookRegistry::instance()
     return instance;
 }
 
-void HookRegistry::add(IHook* hook)
+void HookRegistry::add(std::unique_ptr<IHook> hook)
 {
-    m_hooks.push_back(std::unique_ptr<IHook>(hook));
+    m_hooks.push_back(std::move(hook));
 }
 
 const std::vector<std::unique_ptr<IHook>>& GTASA::SDK::HookRegistry::getAll() const
