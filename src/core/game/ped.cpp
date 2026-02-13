@@ -2,7 +2,17 @@
 
 using namespace GTASA::SDK;
 
-float Ped::getHealth() const {
+std::unique_ptr<Matrix> Ped::getMatrix() const
+{
+    if (!isValid()) return std::make_unique<Matrix>(0);
+
+    return std::make_unique<Matrix>(*reinterpret_cast<uintptr_t*>(
+        (m_ptr) + Offsets::CPed::Matrix
+    ));
+}
+
+float Ped::getHealth() const
+{
     if (!isValid()) return 0.0f;
 
     return *reinterpret_cast<float*>(
@@ -10,7 +20,7 @@ float Ped::getHealth() const {
     );
 }
 
-void GTASA::SDK::Ped::setHealth(float amount) {
+void Ped::setHealth(float amount) {
     if (!isValid()) return;
 
     *reinterpret_cast<float*>(
@@ -18,7 +28,7 @@ void GTASA::SDK::Ped::setHealth(float amount) {
     ) = amount;
 }
 
-float GTASA::SDK::Ped::getArmor() const
+float Ped::getArmor() const
 {
         if (!isValid()) return 0.0f;
 
@@ -27,19 +37,10 @@ float GTASA::SDK::Ped::getArmor() const
     );
 }
 
-void GTASA::SDK::Ped::setArmor(float amount) {
+void Ped::setArmor(float amount) {
     if (!isValid()) return;
 
     *reinterpret_cast<float*>(
         (m_ptr) + Offsets::CPed::Armor
     ) = amount;
-}
-
-float GTASA::SDK::Ped::getPosition()
-{
-            if (!isValid()) return 0.0f;
-
-    return *reinterpret_cast<float*>(
-        (m_ptr) + Offsets::CPed::pos_x
-    );
 }
