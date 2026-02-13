@@ -33,8 +33,11 @@ namespace GTASA {
                         LOG_INFO("Player Health: %.2f", hp);
                         LOG_INFO("Player Armor: %.2f", arm);
 
-                        float pos = player->getPosition();
-                        LOG_INFO("Player pos_x: %.2f", pos);
+                        Vector3 pos = player->getMatrix()->getPosition();
+                        LOG_INFO("Player pos_x: %.2f, pos_y: %.2f, pos_z:%.2f", 
+                        pos.x, pos.y, pos.z);
+
+                        player->getMatrix()->setPosition({pos.x, pos.y, pos.z + 5.0f});
                     }
 
                     break;
