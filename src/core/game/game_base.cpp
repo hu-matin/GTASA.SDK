@@ -13,7 +13,14 @@ namespace GTASA {
                 return;
 
             // base address of gta_sa.exe
-            s_base = reinterpret_cast<uintptr_t>(GetModuleHandleA(nullptr));
+            HMODULE hModule = GetModuleHandleA(nullptr);
+            if (hModule == nullptr) {
+                // Handle error - could throw or log
+                s_base = 0;
+                s_initialized = false;
+                return;
+            }
+            s_base = reinterpret_cast<uintptr_t>(hModule);
             s_initialized = true;
         }
 
@@ -24,6 +31,10 @@ namespace GTASA {
 
         uintptr_t GameBase::address(uintptr_t offset)
         {
+            if (!s_initialized || s_base == 0) {
+                // Return 0 or throw exception
+                return 0;
+            }
             return s_base + offset;
         }
 

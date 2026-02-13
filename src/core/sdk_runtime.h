@@ -2,6 +2,7 @@
 #include "memory"
 #include <vector>
 #include <algorithm>
+#include <mutex>
 #include "hook/hook_manager.h"
 #include "hook/hook_registry.h"
 #include "script/script.h"
@@ -28,6 +29,7 @@ namespace GTASA {
 
 		private:	
 			bool m_initialized;
+			std::mutex m_mutex;
 		};
 	} // namespace SDK
 } // namespace GTASA

@@ -27,6 +27,7 @@ SDKRuntime::~SDKRuntime()
 
 void SDKRuntime::init()
 {
+	std::lock_guard<std::mutex> lock(m_mutex);
 	if (m_initialized) return;
 
 	Logger::Instance().Start();
@@ -58,10 +59,20 @@ void SDKRuntime::init()
 
 void SDKRuntime::shutdown()
 {
-	if (m_initialized)
-	{
-		EventBus::instance().dispatch(EventType::Shutdown);
-		m_initialized = false;
-	}
+	std::lock_guard<std::mutex> lock(m_mutex);
+	if (!m_initialized) return;
+	
+	LOG_INFO("[SDKRuntime] Shutting down SDK Runtime...");
+	
+	// Disable hooks first
+	HookManager::instance().disableHooks();
+	
+	// Dispatch shutdown event
+	EventBus::instance().dispatch(EventType::Shutdown);
+	
+	m_initialized = false;
+	
+	// Stop logger last (after setting m_initialized to false)
+	Logger::Instance().Stop();
 }
 
