@@ -2,6 +2,7 @@
 
 #include "i_hook.h"
 #include "hook_registry.h"
+#include <memory>
 
 namespace GTASA {
     namespace SDK {
@@ -10,7 +11,7 @@ namespace GTASA {
         class AutoHook {
         public:
             AutoHook() {
-                HookRegistry::instance().add(new T());
+                HookRegistry::instance().add(std::make_unique<T>());
             }
         };
     } // namespace SDK

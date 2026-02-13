@@ -2,4 +2,4 @@
 *.vcxproj.user
 *.vcxproj
 *.vcxproj.filters
-build
+build_codeql_detected_source_root

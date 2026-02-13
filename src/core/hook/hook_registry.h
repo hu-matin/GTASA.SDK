@@ -10,7 +10,7 @@ namespace GTASA {
 		public:
 			static HookRegistry& instance();
 
-			void add(IHook* service);
+			void add(std::unique_ptr<IHook> hook);
 
 			const std::vector<std::unique_ptr<IHook>>& getAll() const;
 
