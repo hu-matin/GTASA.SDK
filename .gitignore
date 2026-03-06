@@ -3,3 +3,5 @@
 *.vcxproj
 *.vcxproj.filters
 build_codeql_detected_source_root
+build
+.vscode
