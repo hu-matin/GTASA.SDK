@@ -14,8 +14,11 @@ namespace {
     int __cdecl hk_ProcessFrame(int command, int param)
     {
         // command == 0x1a -> Game processing
+        // LOG_INFO("YOoooooooooooo");
         if (command == 0x1a) {
-            EventBus::instance().dispatch(EventType::GameProcess);
+            auto processFrameEvent = std::make_shared<Events::ProcessFrameEvent>(command, param);
+            EventBus::instance().dispatch(processFrameEvent);
+            return oProcessFrame(processFrameEvent->command, processFrameEvent->param);
         }
 
         return oProcessFrame(command, param);

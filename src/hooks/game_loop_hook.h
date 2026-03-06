@@ -21,5 +21,17 @@ namespace GTASA {
 			virtual void uninstall() override;
 		};
 
+		namespace Events {
+			class ProcessFrameEvent : public BaseEvent {
+				public:
+				int command;
+				int param;
+
+				ProcessFrameEvent(int command, int param) 
+				: command(command), param(param) {}
+
+				virtual const char* getName() const { return "ProcessFrameEvent"; }
+			};
+		}
 	}
 }

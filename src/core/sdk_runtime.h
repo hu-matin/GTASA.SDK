@@ -6,7 +6,7 @@
 #include "hook/hook_manager.h"
 #include "hook/hook_registry.h"
 #include "script/script.h"
-#include "events/event_bus.h"
+#include "event/event_bus.h"
 
 
 namespace GTASA {
@@ -31,5 +31,20 @@ namespace GTASA {
 			bool m_initialized;
 			std::mutex m_mutex;
 		};
+
+
+		namespace Events {
+			class InitializeEvent : public BaseEvent {
+				public:
+				InitializeEvent() {}
+				virtual const char* getName() const { return "InitializeEvent"; }
+			};
+
+			class ShutdownEvent : public BaseEvent {
+				public:
+				ShutdownEvent() {}
+				virtual const char* getName() const { return "ShutdownEvent"; }
+			};
+		}
 	} // namespace SDK
 } // namespace GTASA

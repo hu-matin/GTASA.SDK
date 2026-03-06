@@ -1,9 +1,10 @@
 #pragma once
 
 #include "core/script/script.h"
-#include "core/events/event_bus.h"
+#include "core/event/event_bus.h"
 #include "core/logging/logger.hpp"
 #include "core/script/auto_register_script.h"
+#include "core/sdk_runtime.h"
 
 using namespace Logging;
 
@@ -14,8 +15,8 @@ namespace GTASA {
         public:
             AffinityScript() {}
 
-            virtual void onEvent(EventType type) override {
-                if (type == EventType::Initialize) {
+            virtual void onEvent(std::shared_ptr<BaseEvent> event) override {
+                if (const auto* initializeEvent = dynamic_cast<const Events::InitializeEvent*>(event.get())) {
                     LOG_INFO("[AffinityService] initialized.");
 
                     HANDLE hProcess = GetCurrentProcess();

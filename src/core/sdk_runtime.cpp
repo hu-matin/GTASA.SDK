@@ -39,15 +39,15 @@ void SDKRuntime::init()
 
 
 	LOG_INFO("[SDKRuntime] Initializing scripts...");
-	EventBus::instance().dispatch(EventType::Initialize);
+	auto initializeEvent = std::make_unique<Events::InitializeEvent>();
+	EventBus::instance().dispatch(std::move(initializeEvent));
 	LOG_INFO("[SDKRuntime] Scripts initialized successfully.");
 
 	LOG_INFO("[SDKRuntime] Installing hooks...");
 	HookRegistry::instance().sort();
-
 	for (auto& hook : HookRegistry::instance().getAll())
 		if (hook->isEnabled())
-			hook->install();	
+			hook->install();
 
 	LOG_INFO("[SDKRuntime] Hooks installed successfully.");
 
@@ -69,7 +69,8 @@ void SDKRuntime::shutdown()
 		HookManager::instance().disableHooks();
 		
 		// Dispatch shutdown event
-		EventBus::instance().dispatch(EventType::Shutdown);
+		auto shutdownEvent = std::make_unique<Events::ShutdownEvent>();
+		EventBus::instance().dispatch(std::move(shutdownEvent));
 		
 		m_initialized = false;
 	}
