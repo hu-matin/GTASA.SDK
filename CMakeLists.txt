@@ -26,6 +26,15 @@ target_include_directories(GTASA_SDK PRIVATE
     src
 )
 
+# DirectX9
+target_include_directories(GTASA_SDK PRIVATE
+    "C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Include"
+)
+
+target_link_libraries(GTASA_SDK PRIVATE
+    d3d9
+)
+
 # Detours
 add_subdirectory(libs/Detours)
 target_include_directories(GTASA_SDK PRIVATE
@@ -34,3 +43,10 @@ target_include_directories(GTASA_SDK PRIVATE
 
 target_link_libraries(GTASA_SDK PRIVATE detours)
 
+set(GTA_SA_PATH "E:/Grand Theft Auto - San Andreas - Copy/")
+
+add_custom_command(TARGET GTASA_SDK POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+        $<TARGET_FILE:GTASA_SDK>
+        "${GTA_SA_PATH}/samp.dll"
+)
