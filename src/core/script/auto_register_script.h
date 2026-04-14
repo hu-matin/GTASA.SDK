@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "core/events/event_bus.h"
+#include "core/event/event_bus.h"
 
 namespace GTASA {
     namespace SDK {

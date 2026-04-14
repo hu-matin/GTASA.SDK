@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/events/event_type.h"
+#include "core/event/base_event.h"
 
 namespace GTASA {
     namespace SDK {
@@ -13,7 +13,7 @@ namespace GTASA {
             // ----------------------------
             // Lifecycle Events
             // ----------------------------
-            virtual void onEvent(EventType type) = 0;
+            virtual void onEvent(std::shared_ptr<BaseEvent> event) = 0;
 
             // ----------------------------
             // State Control
