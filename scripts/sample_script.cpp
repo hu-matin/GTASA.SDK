@@ -7,6 +7,7 @@
 #include "hooks/game_loop_hook.h"
 #include "hooks/player_hook.h"
 #include "core/game/player_info.h"
+#include "core/game/hud.h"
 #include <string>
 
 using namespace Logging;
@@ -15,6 +16,7 @@ namespace GTASA {
     namespace SDK {
 
         class SampleScript : public Script {
+
         public:
             SampleScript() {}
 
@@ -43,11 +45,12 @@ namespace GTASA {
 
                         playerInfo->setMoney(200);
                         int wantedLevel = playerInfo->getWantedLevel();
-                        playerInfo->setWantedLevel(wantedLevel > 0 ? 0 : 6);
+                        //playerInfo->setWantedLevel(wantedLevel > 0 ? 0 : 6);
 
                         int chaos = playerInfo->getChaos();
                         wantedLevel = playerInfo->getWantedLevel();
                         LOG_INFO("chaos:%d, wantedLevel: %d", chaos, wantedLevel);
+                        HUD::sendHelpMessage("Hello GTA, I'm Mahdi...!");
                     }
                 }
                 
