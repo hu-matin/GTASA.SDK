@@ -7,13 +7,13 @@ namespace GTASA {
         namespace Offsets
         {
             namespace Globals {
-                constexpr uintptr_t LocalPlayer = 0x77CD98; // 0x0076F3B8;
+                constexpr uintptr_t LocalPlayer = 0x77CD98;
             }
 
             namespace PlayerInfo {
                 constexpr uintptr_t Ped = 0x00;
-                constexpr uintptr_t Money = 0xB8;       // 0x77CE50; // 0x77CE50 - 0x77CD9C = 180
-                constexpr uintptr_t Chaos = 0x4; // TODO: 
+                constexpr uintptr_t Money = 0xB8;
+                constexpr uintptr_t Chaos = 0x4; 
                 constexpr uintptr_t WantedLevel = 0x2C;
             }
 
@@ -27,6 +27,10 @@ namespace GTASA {
                 constexpr uintptr_t pos_x = 0x30;
                 constexpr uintptr_t pos_y = 0x34;
                 constexpr uintptr_t pos_z = 0x38;
+            }
+
+            namespace CHud {
+                constexpr uintptr_t sendHelpMessageFunc = 0x188BE0;
             }
         } // namespace Offsets
         
