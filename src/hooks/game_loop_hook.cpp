@@ -1,20 +1,14 @@
 #include "game_loop_hook.h"
+#include "core/game/game_functions.h"
 
 using namespace GTASA::SDK;
 using namespace Logging;
+using namespace GTASA::SDK::Internal::Functions::System;
 
 namespace {
 
-    // --------------------------------------------------
-    // GTA function pointer
-    // --------------------------------------------------
-    using tProcessFrame = int(__cdecl*)(int command, int param);
-    tProcessFrame oProcessFrame = nullptr;
-
     int __cdecl hk_ProcessFrame(int command, int param)
     {
-        // command == 0x1a -> Game processing
-        // LOG_INFO("YOoooooooooooo");
         if (command == 0x1a) {
             auto processFrameEvent = std::make_shared<Events::ProcessFrameEvent>(command, param);
             EventBus::instance().dispatch(processFrameEvent);
@@ -24,8 +18,10 @@ namespace {
         return oProcessFrame(command, param);
     }
 
-    using tScreenLoad = void(__stdcall*)(void*, LPCSTR);
-    tScreenLoad oScreenLoad = nullptr;
+    void __cdecl hk_strcpy(int destination, int source, unsigned short param_3) {
+        o_strcpy(destination, source, param_3);
+    }
+
 
     void __stdcall hk_ScreenLoad(void* param_1, LPCSTR param_2) {
         return oScreenLoad(param_1, param_2);
@@ -49,6 +45,18 @@ void GameLoopHook::install()
     );
 
     LOG_INFO("[GameLoopHook] Game processor hooked!");
+
+    // 0069db70 - 0x400000 = 29DB70
+    o_strcpy = reinterpret_cast<t_strcpy>(
+        GameBase::address(0x29DB70)
+        );
+
+    HookManager::instance().addHook(
+        reinterpret_cast<void**>(&o_strcpy),
+        reinterpret_cast<void*>(hk_strcpy)
+    );
+
+    LOG_INFO("[GameLoopHook] strcpy hooked!");
 }
 
 void GameLoopHook::uninstall()
