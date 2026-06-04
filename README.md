@@ -114,12 +114,6 @@ The preset uses:
 - Build directory: `build/`
 - C++ standard: C++20
 
-After a successful build, CMake produces `GTASA_SDK.dll` in the Visual Studio build output folder and then copies it to:
-
-```text
-<GTA_SA_PATH>/samp.dll
-```
-
 ## Build With Visual Studio
 
 1. Clone the repository and initialize submodules.
@@ -127,7 +121,16 @@ After a successful build, CMake produces `GTASA_SDK.dll` in the Visual Studio bu
 3. Select a Win32/x86 configuration.
 4. Make sure the DirectX SDK include path and Detours submodule are available.
 5. Build the `GTASA_SDK` target.
-6. Copy the resulting DLL to your GTA:SA folder if you are not using the CMake post-build copy step.
+
+## Running And Testing
+
+Once the build finishes successfully, you can run and test the SDK using the custom launcher:
+
+1. Navigate to the build output directory (e.g., `out/Debug/` or wherever your compiled launcher executable is located).
+2. Run the `launcher.exe` file.
+3. A file dialog or prompt will appear; use it to select your Grand Theft Auto: San Andreas executable (`gta_sa.exe`).
+4. The launcher will automatically boot the game and inject the `GTASA_SDK.dll` into the game process at startup.
+5. You can now test your scripts, view the debug logging console (in Debug configuration), and experiment with the SDK features live in-game!
 
 ## Creating A Script
 
