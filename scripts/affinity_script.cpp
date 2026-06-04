@@ -1,5 +1,3 @@
-#pragma once
-
 #include "core/event/event_bus.h"
 #include "core/logging/logger.hpp"
 #include "core/script/auto_register_script.h"
