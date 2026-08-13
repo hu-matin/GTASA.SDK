@@ -1,20 +1,27 @@
 #include <windows.h>
-
 #include <commdlg.h>
-
 #include <filesystem>
 #include <iostream>
 #include <string>
+#include <memory>
 
 namespace GTASA::SDK::Launcher
 {
-
     constexpr const wchar_t* kDllName = L"GTASA_SDK.dll";
+
+    // RAII deleter to prevent handlee leaks during injection
+    struct HandleDeleter {
+        void operator()(HANDLE h) const noexcept {
+            if (h && h != INVALID_HANDLE_VALUE) ::CloseHandle(h);
+        }
+    };
+    using UniqueHandle = std::unique_ptr<void, HandleDeleter>;
 
     std::filesystem::path getCurrentDirectoryPath()
     {
         std::wstring exePath(32767, L'\0');
-        const DWORD len = GetModuleFileNameW(nullptr, exePath.data(), exePath.size());
+        // safer size cast for Win32 API parameters
+        const DWORD len = GetModuleFileNameW(nullptr, exePath.data(), static_cast<DWORD>(exePath.size()));
         if (len > 0 && len < exePath.size())
         {
             exePath.resize(len);
@@ -26,10 +33,9 @@ namespace GTASA::SDK::Launcher
 
     std::wstring openBrowser()
     {
-        OPENFILENAMEW ofn;
+        OPENFILENAMEW ofn{}; // initialization instead of ZeroMemory
         wchar_t szFile[260] = {0};
 
-        ZeroMemory(&ofn, sizeof(ofn));
         ofn.lStructSize = sizeof(ofn);
         ofn.hwndOwner = NULL;
         ofn.lpstrFile = szFile;
@@ -50,7 +56,8 @@ namespace GTASA::SDK::Launcher
     bool launchSuspendedProcess(const std::wstring& exePath, const std::wstring& gameDir,
                                 PROCESS_INFORMATION& processInfo)
     {
-        STARTUPINFOW startupInfo = {sizeof(startupInfo)};
+        STARTUPINFOW startupInfo{};
+        startupInfo.cb = sizeof(startupInfo);
         return CreateProcessW(exePath.c_str(), NULL, NULL, NULL, FALSE, CREATE_SUSPENDED, NULL,
                               gameDir.c_str(), &startupInfo, &processInfo) == TRUE;
     }
@@ -78,23 +85,22 @@ namespace GTASA::SDK::Launcher
             return false;
         }
 
-        HANDLE remoteThread =
-            CreateRemoteThread(processHandle, nullptr, 0, pLoadLibraryW, allocatedMem, 0, nullptr);
+        UniqueHandle remoteThread(CreateRemoteThread(processHandle, nullptr, 0, pLoadLibraryW, allocatedMem, 0, nullptr));
         if (!remoteThread)
         {
             VirtualFreeEx(processHandle, allocatedMem, 0, MEM_RELEASE);
             return false;
         }
 
-        const DWORD waitResult = WaitForSingleObject(remoteThread, 15000); // Wait up to 15 seconds
+        const DWORD waitResult = WaitForSingleObject(remoteThread.get(), 15000); // Wait up to 15 seconds
         DWORD remoteExitCode = 0;
         const bool gotExitCode = (waitResult == WAIT_OBJECT_0) &&
-                                 (GetExitCodeThread(remoteThread, &remoteExitCode) == TRUE);
-        CloseHandle(remoteThread);
+                                 (GetExitCodeThread(remoteThread.get(), &remoteExitCode) == TRUE);
+
         VirtualFreeEx(processHandle, allocatedMem, 0, MEM_RELEASE);
         return gotExitCode && (remoteExitCode != 0);
     }
-} // namespace GTASA::SDK::Launcher
+}
 
 using namespace GTASA::SDK::Launcher;
 
@@ -133,8 +139,7 @@ int main()
 
     std::cout << "[*] Starting Custom Launcher (Suspended Mode)...\n";
 
-    PROCESS_INFORMATION pi;
-    ZeroMemory(&pi, sizeof(pi));
+    PROCESS_INFORMATION pi{}; // standard block initialization
 
     if (!launchSuspendedProcess(exePath, gameDir, pi))
     {
@@ -145,13 +150,15 @@ int main()
         return 1;
     }
 
+    // Added unique smart handles to securely manage memory tracking
+    UniqueHandle hProcess(pi.hProcess);
+    UniqueHandle hThread(pi.hThread);
+
     std::cout << "[*] Injecting GTASA_SDK.dll before game wakes up...\n";
 
-    if (!injectDll(pi.hProcess, dllPath))
+    if (!injectDll(hProcess.get(), dllPath))
     {
-        TerminateProcess(pi.hProcess, 1);
-        CloseHandle(pi.hProcess);
-        CloseHandle(pi.hThread);
+        TerminateProcess(hProcess.get(), 1);
         std::cout << "[*] Press Enter to exit...\n";
         std::cin.get();
         return 1;
@@ -160,8 +167,6 @@ int main()
     std::cout << "[+] DLL Injected.\n";
 
     std::cout << "[*] Waking up the game...\n";
-    ResumeThread(pi.hThread);
-    CloseHandle(pi.hProcess);
-    CloseHandle(pi.hThread);
+    ResumeThread(hThread.get());
     return 0;
 }
